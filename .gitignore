@@ -42,7 +42,6 @@ env/
 # ---------------------------------
 
 # Ignore the heavy Dataset (Too big for GitHub)
-data/
 datasets/
 
 # Ignore YOLO training runs (Lots of temp files)
