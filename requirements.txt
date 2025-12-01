@@ -1,0 +1,19 @@
+# AI & Computer Vision
+ultralytics
+opencv-python-headless
+torch
+torchvision
+
+# Data Handling & Math
+pandas
+numpy
+matplotlib
+seaborn
+
+# Dataset Management
+roboflow
+
+# Backend & Dashboard
+fastapi
+uvicorn
+streamlit
