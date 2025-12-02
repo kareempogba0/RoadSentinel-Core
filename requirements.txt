@@ -3,6 +3,8 @@ ultralytics
 opencv-python-headless
 torch
 torchvision
+tensorflow
+scikit-learn
 
 # Data Handling & Math
 pandas
