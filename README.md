@@ -17,5 +17,5 @@ By developing a computer vision-based anomaly detection framework, the system wi
 ### 📂 Project Status
 * [x] Repo Setup
 * [x] Problem Definition
-* [ ] Dataset Pipeline
-* [ ] Baseline Model Training
+* [x] Dataset Pipeline
+* [x] Baseline Model Training
