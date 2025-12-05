@@ -1,0 +1,40 @@
+============================================================
+DATA CLEANING REPORT
+Car Accident Detection Dataset
+============================================================
+Report Generated: 2025-12-02 01:18:21
+============================================================
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+CLEANING ALL DATASET SPLITS
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+[!] TRAIN split not found at ./data/car-accident-detection-1\train
+[!] VALID split not found at ./data/car-accident-detection-1\valid
+[!] TEST split not found at ./data/car-accident-detection-1\test
+
+============================================================
+OVERALL SUMMARY - ALL SPLITS
+============================================================
+[+] Total valid images:           0
+[-] Total corrupted files:        0
+[*] Total missing labels created: 0
+[#] Total images processed:       0
+============================================================
+
+============================================================
+DETAILED FILE LISTS
+============================================================
+
+[CORRUPTED FILES]
+  None found - All images are valid!
+
+[MISSING LABEL FILES - Created Empty Labels]
+  None found - All images have labels!
+
+============================================================
+
+============================================================
+Report saved to: ./data_cleaning_reports\data_cleaning_report_20251202_011821.txt
+============================================================

@@ -43,8 +43,14 @@ def clean_data(data_path):
     Args:
         data_path (str): Path to the dataset folder (e.g., './data/car-accident-detection-1/train')
     """
-    # Find all image files recursively
-    images = glob.glob(f"{data_path}/**/images/*.jpg", recursive=True)
+    # Find all image files recursively (checking jpg, jpeg, and png)
+    images_jpg = glob.glob(f"{data_path}/**/images/*.jpg", recursive=True)
+    images_jpeg = glob.glob(f"{data_path}/**/images/*.jpeg", recursive=True)
+    images_png = glob.glob(f"{data_path}/**/images/*.png", recursive=True)
+
+    # Combine all found images into one list
+    images = images_jpg + images_jpeg + images_png
+
     log_message(f"=" * 60)
     log_message(f"Starting Data Cleaning Process")
     log_message(f"=" * 60)
@@ -67,17 +73,25 @@ def clean_data(data_path):
             corrupted_count += 1
             corrupted_files.append(str(img_path.name))
             continue
-        
+
         # Check 2: Does label exist? (Missing Value)
         # Convert image path to corresponding label path
-        label_path = str(img_path).replace("images", "labels").replace(".jpg", ".txt")
-        
-        if not os.path.exists(label_path):
+        # FIX: Use with_suffix(".txt") to handle .png, .jpeg, etc. automatically
+        label_path = Path(str(img_path).replace("images", "labels")).with_suffix(".txt")
+
+        # Check if the label file exists (using the Path object works fine)
+        if not label_path.exists():
             log_message(f"[!] MISSING LABEL: {img_path.name}")
-            log_message(f"    Creating empty label file: {Path(label_path).name}")
+            log_message(f"    Creating empty label file: {label_path.name}")
+
             # Create empty label file (indicates background/no accident image)
-            os.makedirs(os.path.dirname(label_path), exist_ok=True)
-            open(label_path, 'a').close()
+            # Ensure the parent directory exists
+            os.makedirs(label_path.parent, exist_ok=True)
+
+            # Create the empty .txt file
+            with open(label_path, 'w') as f:
+                pass
+
             missing_label_count += 1
             missing_label_files.append(str(img_path.name))
         else:

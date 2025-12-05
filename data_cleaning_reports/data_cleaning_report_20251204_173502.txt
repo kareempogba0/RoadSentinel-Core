@@ -1,0 +1,95 @@
+============================================================
+DATA CLEANING REPORT
+Car Accident Detection Dataset
+============================================================
+Report Generated: 2025-12-04 17:35:02
+============================================================
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+CLEANING ALL DATASET SPLITS
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+[>>] Processing TRAIN split...
+============================================================
+Starting Data Cleaning Process
+============================================================
+Checking 474 images in ./data/car-accident-detection-1\train...
+
+
+============================================================
+Data Cleaning Summary
+============================================================
+[+] Valid images with labels:     474
+[-] Corrupted files deleted:      0
+[*] Missing labels created:       0
+[#] Total images processed:       474
+============================================================
+[DONE] Data cleaning complete!
+
+
+[>>] Processing VALID split...
+============================================================
+Starting Data Cleaning Process
+============================================================
+Checking 124 images in ./data/car-accident-detection-1\valid...
+
+
+============================================================
+Data Cleaning Summary
+============================================================
+[+] Valid images with labels:     124
+[-] Corrupted files deleted:      0
+[*] Missing labels created:       0
+[#] Total images processed:       124
+============================================================
+[DONE] Data cleaning complete!
+
+
+[>>] Processing TEST split...
+============================================================
+Starting Data Cleaning Process
+============================================================
+Checking 68 images in ./data/car-accident-detection-1\test...
+
+[!] MISSING LABEL: images.jpeg
+    Creating empty label file: labels.txt
+
+============================================================
+Data Cleaning Summary
+============================================================
+[+] Valid images with labels:     67
+[-] Corrupted files deleted:      0
+[*] Missing labels created:       1
+[#] Total images processed:       68
+============================================================
+[DONE] Data cleaning complete!
+
+
+============================================================
+OVERALL SUMMARY - ALL SPLITS
+============================================================
+[+] Total valid images:           665
+[-] Total corrupted files:        0
+[*] Total missing labels created: 1
+[#] Total images processed:       666
+============================================================
+
+============================================================
+DETAILED FILE LISTS
+============================================================
+
+[CORRUPTED FILES]
+  None found - All images are valid!
+
+[MISSING LABEL FILES - Created Empty Labels]
+
+  TEST split (1 files):
+    - images.jpeg
+
+============================================================
+
+============================================================
+Report saved to: ./data_cleaning_reports\data_cleaning_report_20251204_173502.txt
+============================================================

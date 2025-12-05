@@ -1,0 +1,10 @@
+# Dataset root directory
+path: E:/RoadSentinel-Core/data/car-accident-detection-1
+
+# Train and Validation directories (relative to 'path')
+train: train/images
+val: valid/images   # If you don't have a 'valid' folder, change this to: train/images
+
+# Classes
+nc: 2               # Number of classes (Change this if you have more or fewer than 2)
+names: ['Accident', 'No-Accident']  # REPLACE these with the names found in Step 1

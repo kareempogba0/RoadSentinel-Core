@@ -32,7 +32,7 @@ EPOCHS = 10
 LEARNING_RATE = 0.001
 
 # Data paths
-BASE_DIR = Path("f:/Abdelrahman/CS415/data/car-accident-detection-1")
+BASE_DIR = Path("data/car-accident-detection-1")
 TRAIN_IMAGES_DIR = BASE_DIR / "train" / "images"
 TRAIN_LABELS_DIR = BASE_DIR / "train" / "labels"
 VALID_IMAGES_DIR = BASE_DIR / "valid" / "images"
@@ -133,52 +133,78 @@ def create_vit_classifier(
     return model
 
 
-def load_image(image_path, label_path):
-    """Load and preprocess image and label"""
+def load_image(image_path, label_value):
+    """Load and preprocess image and use pre-calculated label"""
     # Read image
     img = tf.io.read_file(image_path)
     img = tf.image.decode_jpeg(img, channels=3)
     img = tf.image.resize(img, [IMAGE_SIZE, IMAGE_SIZE])
     img = img / 255.0  # Normalize to [0, 1]
-    
-    # Read label (YOLO format: class x_center y_center width height)
-    # For this dataset, we'll classify whether an accident is present (1) or not (0)
-    label_content = tf.io.read_file(label_path)
-    label_lines = tf.strings.split(label_content, '\n')
-    
-    # If label file has content, it means there's an accident
-    has_accident = tf.cast(tf.strings.length(label_content) > 0, tf.float32)
-    
-    return img, has_accident
+
+    # Ensure label is float32
+    label = tf.cast(label_value, tf.float32)
+
+    return img, label
 
 
 def create_dataset(images_dir, labels_dir, batch_size, shuffle=True):
-    """Create TensorFlow dataset from images and labels"""
-    image_paths = sorted(list(Path(images_dir).glob("*.jpg")))
-    
+    """Create TensorFlow dataset from images and labels (Robust Version)"""
+
+    # 1. Look for ALL common image extensions
+    image_paths = []
+    for ext in ["*.jpg", "*.jpeg", "*.png", "*.bmp"]:
+        image_paths.extend(list(Path(images_dir).glob(ext)))
+
+    image_paths = sorted(image_paths)
+
     images_list = []
     labels_list = []
-    
+    accident_count = 0
+    no_accident_count = 0
+
+    print(f"\nProcessing {images_dir}...")
+
     for img_path in image_paths:
         label_path = Path(labels_dir) / (img_path.stem + ".txt")
+
+        # Default: No Accident (Class 0)
+        has_accident = 0.0
+
+        # Check label
         if label_path.exists():
-            images_list.append(str(img_path))
-            labels_list.append(str(label_path))
-    
+            if label_path.stat().st_size > 0:
+                has_accident = 1.0
+                accident_count += 1
+            else:
+                no_accident_count += 1
+        else:
+            no_accident_count += 1
+
+        images_list.append(str(img_path))
+        labels_list.append(has_accident)
+
+    print(f"  Found {len(images_list)} total images")
+    print(f"  - Accidents: {accident_count}")
+    print(f"  - No Accidents: {no_accident_count}")
+
+    if no_accident_count == 0:
+        print("  ⚠️ CRITICAL WARNING: No 'Safe' examples found in this set!")
+        print("  The model will only learn to predict 'Accident' for everything.")
+
     # Create dataset
     image_ds = tf.data.Dataset.from_tensor_slices(images_list)
     label_ds = tf.data.Dataset.from_tensor_slices(labels_list)
     ds = tf.data.Dataset.zip((image_ds, label_ds))
-    
+
     # Load and preprocess
     ds = ds.map(load_image, num_parallel_calls=tf.data.AUTOTUNE)
-    
+
     if shuffle:
         ds = ds.shuffle(buffer_size=1000)
-    
+
     ds = ds.batch(batch_size)
     ds = ds.prefetch(buffer_size=tf.data.AUTOTUNE)
-    
+
     return ds, len(images_list)
 
 
@@ -261,18 +287,19 @@ def main():
     print("VISION TRANSFORMER FOR CAR ACCIDENT DETECTION")
     print("=" * 80)
     print(f"\nTraining started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-    
-    # Create datasets
+
+    # 1. Load Datasets
     print("Loading datasets...")
-    train_ds, train_size = create_dataset(TRAIN_IMAGES_DIR, TRAIN_LABELS_DIR, BATCH_SIZE)
-    valid_ds, valid_size = create_dataset(VALID_IMAGES_DIR, VALID_LABELS_DIR, BATCH_SIZE, shuffle=False)
-    test_ds, test_size = create_dataset(TEST_IMAGES_DIR, TEST_LABELS_DIR, BATCH_SIZE, shuffle=False)
-    
-    print(f"Training samples: {train_size}")
-    print(f"Validation samples: {valid_size}")
-    print(f"Test samples: {test_size}")
-    
-    # Create model
+    # We rename variables here to be consistent with the rest of the code
+    train_ds, train_count = create_dataset(TRAIN_IMAGES_DIR, TRAIN_LABELS_DIR, BATCH_SIZE)
+    val_ds, val_count = create_dataset(VALID_IMAGES_DIR, VALID_LABELS_DIR, BATCH_SIZE, shuffle=False)
+    test_ds, test_count = create_dataset(TEST_IMAGES_DIR, TEST_LABELS_DIR, BATCH_SIZE, shuffle=False)
+
+    print(f"Training samples: {train_count}")
+    print(f"Validation samples: {val_count}")
+    print(f"Test samples: {test_count}")
+
+    # 2. Build Model
     print("\nBuilding Vision Transformer model...")
     model = create_vit_classifier(
         input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3),
@@ -284,8 +311,8 @@ def main():
         transformer_layers=TRANSFORMER_LAYERS,
         mlp_head_units=MLP_HEAD_UNITS,
     )
-    
-    # Compile model
+
+    # 3. Compile Model
     model.compile(
         optimizer=keras.optimizers.Adam(learning_rate=LEARNING_RATE),
         loss=keras.losses.BinaryCrossentropy(),
@@ -296,12 +323,11 @@ def main():
             keras.metrics.AUC(name="auc"),
         ],
     )
-    
-    # Model summary
+
     print("\nModel Architecture:")
     model.summary()
-    
-    # Callbacks
+
+    # 4. Define Callbacks
     callbacks = [
         keras.callbacks.EarlyStopping(
             monitor="val_loss",
@@ -323,113 +349,100 @@ def main():
             verbose=1
         ),
     ]
-    
-    # Train model
-    print("\nTraining model...")
+
+    # 5. Calculate Class Weights
+    print("\nTraining model with Class Weights...")
     print("-" * 80)
+    print("Calculating class weights...")
+
+    # Loop through training data to count exact positives and negatives
+    y_train = []
+    for _, labels in train_ds:
+        y_train.extend(labels.numpy())
+
+    neg = len([x for x in y_train if x == 0.0])
+    pos = len([x for x in y_train if x == 1.0])
+    total = neg + pos
+
+    # Formula: (1 / Class Count) * (Total / 2)
+    weight_for_0 = (1 / neg) * (total / 2.0) if neg > 0 else 1.0
+    weight_for_1 = (1 / pos) * (total / 2.0) if pos > 0 else 1.0
+
+    class_weight = {0: weight_for_0, 1: weight_for_1}
+
+    print(f"Safe Road (Class 0): {neg} images | Weight: {weight_for_0:.2f}")
+    print(f"Accident  (Class 1): {pos} images | Weight: {weight_for_1:.2f}")
+
+    # 6. Train
     history = model.fit(
         train_ds,
-        validation_data=valid_ds,
+        validation_data=val_ds,  # Variable name is now consistent
         epochs=EPOCHS,
         callbacks=callbacks,
-        verbose=1
+        class_weight=class_weight
     )
-    
-    # Plot training history
+
+    # 7. Evaluate
     plot_training_history(history)
-    
-    # Evaluate on test set
+
     print("\n" + "=" * 80)
     print("EVALUATION ON TEST SET")
     print("=" * 80)
-    
-    # Get predictions
+
     y_true_list = []
     y_pred_proba_list = []
-    
+
     for images, labels in test_ds:
         predictions = model.predict(images, verbose=0)
         y_true_list.extend(labels.numpy())
         y_pred_proba_list.extend(predictions.flatten())
-    
+
     y_true = np.array(y_true_list)
     y_pred_proba = np.array(y_pred_proba_list)
     y_pred = (y_pred_proba > 0.5).astype(int)
-    
-    # Calculate metrics
+
     metrics = calculate_metrics(y_true, y_pred, y_pred_proba)
-    
-    # Print metrics
+
     print("\n📊 MODEL PERFORMANCE METRICS:")
     print("-" * 80)
-    print(f"Accuracy:       {metrics['accuracy']:.4f} ({metrics['accuracy']*100:.2f}%)")
+    print(f"Accuracy:       {metrics['accuracy']:.4f} ({metrics['accuracy'] * 100:.2f}%)")
     print(f"F1-Score:       {metrics['f1_score']:.4f}")
     print(f"Precision:      {metrics['precision']:.4f}")
     print(f"Recall:         {metrics['recall']:.4f}")
     print(f"Specificity:    {metrics['specificity']:.4f}")
-    print(f"MSE:            {metrics['mse']:.4f}")
-    print(f"RMSE:           {metrics['rmse']:.4f}")
-    
+
     print("\n📈 CONFUSION MATRIX:")
     print("-" * 80)
     print(f"True Positives:  {metrics['true_positives']}")
     print(f"True Negatives:  {metrics['true_negatives']}")
     print(f"False Positives: {metrics['false_positives']}")
     print(f"False Negatives: {metrics['false_negatives']}")
-    
+
     print("\n" + "=" * 80)
     print("DETAILED CLASSIFICATION REPORT:")
     print("=" * 80)
-    print(classification_report(y_true, y_pred, target_names=['No Accident', 'Accident']))
-    
-    # Save metrics to JSON
+
+    unique_labels = np.unique(y_true)
+    target_names = ['No Accident', 'Accident']
+
+    if len(unique_labels) == 1:
+        print(f"⚠️ WARNING: Test set contains only one class: {unique_labels[0]}")
+    else:
+        print(classification_report(y_true, y_pred, target_names=target_names))
+
+    # Save metrics logic...
     metrics_output = {
         'model_type': 'Vision Transformer (ViT)',
-        'training_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'config': {
-            'image_size': IMAGE_SIZE,
-            'patch_size': PATCH_SIZE,
-            'projection_dim': PROJECTION_DIM,
-            'num_heads': NUM_HEADS,
-            'transformer_layers': TRANSFORMER_LAYERS,
-            'batch_size': BATCH_SIZE,
-            'epochs': EPOCHS,
-            'learning_rate': LEARNING_RATE,
-        },
-        'dataset_info': {
-            'train_samples': train_size,
-            'validation_samples': valid_size,
-            'test_samples': test_size,
-        },
-        'metrics': {
-            'accuracy': float(metrics['accuracy']),
-            'f1_score': float(metrics['f1_score']),
-            'precision': float(metrics['precision']),
-            'recall': float(metrics['recall']),
-            'specificity': float(metrics['specificity']),
-            'mse': float(metrics['mse']),
-            'rmse': float(metrics['rmse']),
-            'confusion_matrix': metrics['confusion_matrix'],
-        },
-        'training_history': {
-            'final_train_accuracy': float(history.history['accuracy'][-1]),
-            'final_val_accuracy': float(history.history['val_accuracy'][-1]),
-            'final_train_loss': float(history.history['loss'][-1]),
-            'final_val_loss': float(history.history['val_loss'][-1]),
-            'best_val_accuracy': float(max(history.history['val_accuracy'])),
-        }
+        'metrics': metrics
     }
-    
+
     with open('model_metrics.json', 'w') as f:
         json.dump(metrics_output, f, indent=4)
-    
-    print("\n✅ Metrics saved to 'model_metrics.json'")
-    print("✅ Model saved to 'best_model.h5'")
-    print("✅ Training history plot saved to 'training_history.png'")
-    
-    print(f"\nTraining completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+    print("\n✅ Metrics and Model saved.")
+    print(f"Training completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 80)
-    
+
     return model, metrics
 
 

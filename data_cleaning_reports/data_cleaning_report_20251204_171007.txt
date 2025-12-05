@@ -1,0 +1,241 @@
+============================================================
+DATA CLEANING REPORT
+Car Accident Detection Dataset
+============================================================
+Report Generated: 2025-12-04 17:10:07
+============================================================
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+CLEANING ALL DATASET SPLITS
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+[>>] Processing TRAIN split...
+============================================================
+Starting Data Cleaning Process
+============================================================
+Checking 474 images in ./data/car-accident-detection-1\train...
+
+[!] MISSING LABEL: img1.jpeg
+    Creating empty label file: img1.txt
+[!] MISSING LABEL: img10.jpeg
+    Creating empty label file: img10.txt
+[!] MISSING LABEL: img11.jpeg
+    Creating empty label file: img11.txt
+[!] MISSING LABEL: img12.jpeg
+    Creating empty label file: img12.txt
+[!] MISSING LABEL: img13.jpeg
+    Creating empty label file: img13.txt
+[!] MISSING LABEL: img14.jpeg
+    Creating empty label file: img14.txt
+[!] MISSING LABEL: img15.jpeg
+    Creating empty label file: img15.txt
+[!] MISSING LABEL: img16.jpeg
+    Creating empty label file: img16.txt
+[!] MISSING LABEL: img17.jpeg
+    Creating empty label file: img17.txt
+[!] MISSING LABEL: img18.jpeg
+    Creating empty label file: img18.txt
+[!] MISSING LABEL: img19.jpeg
+    Creating empty label file: img19.txt
+[!] MISSING LABEL: img2.jpeg
+    Creating empty label file: img2.txt
+[!] MISSING LABEL: img20.jpeg
+    Creating empty label file: img20.txt
+[!] MISSING LABEL: img21.jpeg
+    Creating empty label file: img21.txt
+[!] MISSING LABEL: img22.jpeg
+    Creating empty label file: img22.txt
+[!] MISSING LABEL: img23.jpeg
+    Creating empty label file: img23.txt
+[!] MISSING LABEL: img24.jpeg
+    Creating empty label file: img24.txt
+[!] MISSING LABEL: img25.jpeg
+    Creating empty label file: img25.txt
+[!] MISSING LABEL: img26.jpeg
+    Creating empty label file: img26.txt
+[!] MISSING LABEL: img27.jpeg
+    Creating empty label file: img27.txt
+[!] MISSING LABEL: img28.jpeg
+    Creating empty label file: img28.txt
+[!] MISSING LABEL: img29.jpeg
+    Creating empty label file: img29.txt
+[!] MISSING LABEL: img3.jpeg
+    Creating empty label file: img3.txt
+[!] MISSING LABEL: img30.jpeg
+    Creating empty label file: img30.txt
+[!] MISSING LABEL: img31.jpeg
+    Creating empty label file: img31.txt
+[!] MISSING LABEL: img32.jpeg
+    Creating empty label file: img32.txt
+[!] MISSING LABEL: img33.jpeg
+    Creating empty label file: img33.txt
+[!] MISSING LABEL: img34.jpeg
+    Creating empty label file: img34.txt
+[!] MISSING LABEL: img35.jpeg
+    Creating empty label file: img35.txt
+[!] MISSING LABEL: img36.jpeg
+    Creating empty label file: img36.txt
+[!] MISSING LABEL: img37.jpeg
+    Creating empty label file: img37.txt
+[!] MISSING LABEL: img38.jpeg
+    Creating empty label file: img38.txt
+[!] MISSING LABEL: img39.jpeg
+    Creating empty label file: img39.txt
+[!] MISSING LABEL: img4.jpeg
+    Creating empty label file: img4.txt
+[!] MISSING LABEL: img40.jpeg
+    Creating empty label file: img40.txt
+[!] MISSING LABEL: img5.jpeg
+    Creating empty label file: img5.txt
+[!] MISSING LABEL: img6.jpeg
+    Creating empty label file: img6.txt
+[!] MISSING LABEL: img7.jpeg
+    Creating empty label file: img7.txt
+[!] MISSING LABEL: img8.jpeg
+    Creating empty label file: img8.txt
+[!] MISSING LABEL: img9.jpeg
+    Creating empty label file: img9.txt
+
+============================================================
+Data Cleaning Summary
+============================================================
+[+] Valid images with labels:     434
+[-] Corrupted files deleted:      0
+[*] Missing labels created:       40
+[#] Total images processed:       474
+============================================================
+[DONE] Data cleaning complete!
+
+
+[>>] Processing VALID split...
+============================================================
+Starting Data Cleaning Process
+============================================================
+Checking 124 images in ./data/car-accident-detection-1\valid...
+
+
+============================================================
+Data Cleaning Summary
+============================================================
+[+] Valid images with labels:     124
+[-] Corrupted files deleted:      0
+[*] Missing labels created:       0
+[#] Total images processed:       124
+============================================================
+[DONE] Data cleaning complete!
+
+
+[>>] Processing TEST split...
+============================================================
+Starting Data Cleaning Process
+============================================================
+Checking 71 images in ./data/car-accident-detection-1\test...
+
+[!] MISSING LABEL: img1.jpeg
+    Creating empty label file: img1.txt
+[!] MISSING LABEL: img10.jpeg
+    Creating empty label file: img10.txt
+[!] MISSING LABEL: img2.jpeg
+    Creating empty label file: img2.txt
+[!] MISSING LABEL: img3.jpeg
+    Creating empty label file: img3.txt
+[!] MISSING LABEL: img4.jpeg
+    Creating empty label file: img4.txt
+[!] MISSING LABEL: img5.jpeg
+    Creating empty label file: img5.txt
+[!] MISSING LABEL: img7.jpeg
+    Creating empty label file: img7.txt
+[!] MISSING LABEL: img8.jpeg
+    Creating empty label file: img8.txt
+[!] MISSING LABEL: img9.jpeg
+    Creating empty label file: img9.txt
+
+============================================================
+Data Cleaning Summary
+============================================================
+[+] Valid images with labels:     62
+[-] Corrupted files deleted:      0
+[*] Missing labels created:       9
+[#] Total images processed:       71
+============================================================
+[DONE] Data cleaning complete!
+
+
+============================================================
+OVERALL SUMMARY - ALL SPLITS
+============================================================
+[+] Total valid images:           620
+[-] Total corrupted files:        0
+[*] Total missing labels created: 49
+[#] Total images processed:       669
+============================================================
+
+============================================================
+DETAILED FILE LISTS
+============================================================
+
+[CORRUPTED FILES]
+  None found - All images are valid!
+
+[MISSING LABEL FILES - Created Empty Labels]
+
+  TRAIN split (40 files):
+    - img1.jpeg
+    - img10.jpeg
+    - img11.jpeg
+    - img12.jpeg
+    - img13.jpeg
+    - img14.jpeg
+    - img15.jpeg
+    - img16.jpeg
+    - img17.jpeg
+    - img18.jpeg
+    - img19.jpeg
+    - img2.jpeg
+    - img20.jpeg
+    - img21.jpeg
+    - img22.jpeg
+    - img23.jpeg
+    - img24.jpeg
+    - img25.jpeg
+    - img26.jpeg
+    - img27.jpeg
+    - img28.jpeg
+    - img29.jpeg
+    - img3.jpeg
+    - img30.jpeg
+    - img31.jpeg
+    - img32.jpeg
+    - img33.jpeg
+    - img34.jpeg
+    - img35.jpeg
+    - img36.jpeg
+    - img37.jpeg
+    - img38.jpeg
+    - img39.jpeg
+    - img4.jpeg
+    - img40.jpeg
+    - img5.jpeg
+    - img6.jpeg
+    - img7.jpeg
+    - img8.jpeg
+    - img9.jpeg
+
+  TEST split (9 files):
+    - img1.jpeg
+    - img10.jpeg
+    - img2.jpeg
+    - img3.jpeg
+    - img4.jpeg
+    - img5.jpeg
+    - img7.jpeg
+    - img8.jpeg
+    - img9.jpeg
+
+============================================================
+
+============================================================
+Report saved to: ./data_cleaning_reports\data_cleaning_report_20251204_171007.txt
+============================================================

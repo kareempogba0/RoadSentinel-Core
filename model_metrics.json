@@ -1,0 +1,26 @@
+{
+    "model_type": "Vision Transformer (ViT)",
+    "metrics": {
+        "accuracy": 0.9117647058823529,
+        "f1_score": 0.9538461538461539,
+        "mse": 0.08584533631801605,
+        "rmse": 0.29299374791625854,
+        "confusion_matrix": [
+            [
+                0,
+                6
+            ],
+            [
+                0,
+                62
+            ]
+        ],
+        "precision": 0.9117647058823529,
+        "recall": 1.0,
+        "specificity": 0.0,
+        "true_positives": 62,
+        "true_negatives": 0,
+        "false_positives": 6,
+        "false_negatives": 0
+    }
+}
