@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import time
 from PIL import Image
@@ -36,7 +37,9 @@ def get_ai_engine():
 try:
     predictor = get_ai_engine()
 except Exception as e:
-    st.error("⚠️ Model not found. Please ensure 'best_model.h5' is in the 'models' folder.")
+    st.error(f"⚠️ Model loading failed. Error details: {e}")
+    st.write("Current working directory:", os.getcwd())
+    st.write("Files in 'models' folder:", os.listdir('models') if os.path.exists('models') else "Folder not found")
     st.stop()
 
 # ---------------------------------------------------------
