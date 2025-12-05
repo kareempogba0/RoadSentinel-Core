@@ -31,7 +31,7 @@ st.markdown("""
 # ---------------------------------------------------------
 @st.cache_resource
 def get_ai_engine():
-    return RoadSentinelPredictor('models/best_model_mobilenet.keras')
+    return RoadSentinelPredictor('models/best_model_mobilenet.h5')
 
 
 try:

@@ -108,7 +108,7 @@ model.compile(
 
 # 4. TRAIN
 print("\nStarting Transfer Learning...")
-checkpoint = ModelCheckpoint("models/best_model_mobilenet.keras", monitor='val_accuracy', save_best_only=True)
+checkpoint = ModelCheckpoint("models/best_model_mobilenet.h5", monitor='val_accuracy', save_best_only=True)
 early_stop = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
 
 # Calculate weights again (Crucial for your unbalanced data)
@@ -129,4 +129,4 @@ history = model.fit(
     class_weight=class_weight
 )
 
-print("✅ Training Complete. Model saved to models/best_model_mobilenet.keras")
+print("✅ Training Complete. Model saved to models/best_model_mobilenet.h5")

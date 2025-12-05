@@ -9,7 +9,7 @@ IMG_SIZE = 224
 
 
 class RoadSentinelPredictor:
-    def __init__(self, model_path='models/best_model_mobilenet.keras'):
+    def __init__(self, model_path='models/best_model_mobilenet.h5'):
         self.model_path = model_path
         self.model = None
         self.load_model()
