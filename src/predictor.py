@@ -1,11 +1,41 @@
 import os
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import load_model
+from tensorflow.keras import models
+from tensorflow.keras import layers
+from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 # Configuration for MobileNetV2
 IMG_SIZE = 224
+
+
+# --- MODEL ARCHITECTURE DEFINITION (Exact match to train_transfer.py) ---
+def create_mobilenet_classifier():
+    """Builds the MobileNetV2 architecture identical to train_transfer.py"""
+
+    # 1. Base Model (Loads structure, weights will be overwritten later)
+    base_model = MobileNetV2(
+        weights='imagenet',  # Load ImageNet weights to establish structure
+        include_top=False,
+        input_shape=(IMG_SIZE, IMG_SIZE, 3)
+    )
+    base_model.trainable = False  # Keep frozen
+
+    # 2. Custom Top Layers (Must match training structure)
+    model = models.Sequential([
+        base_model,
+        layers.GlobalAveragePooling2D(),
+        layers.Dropout(0.2),
+        layers.Dense(128, activation='relu'),
+        layers.Dropout(0.2),
+        layers.Dense(1, activation='sigmoid')  # Binary output
+    ])
+
+    return model
+
+
+# ---------------------------------------------------------------
 
 
 class RoadSentinelPredictor:
@@ -15,28 +45,30 @@ class RoadSentinelPredictor:
         self.load_model()
 
     def load_model(self):
-        """Loads the MobileNetV2 model."""
+        """Builds the architecture from code and loads ONLY weights (Final fix for batch_shape error)."""
         if not os.path.exists(self.model_path):
             raise FileNotFoundError(f"Model not found at {self.model_path}")
 
-        print(f"Loading MobileNet from {self.model_path}...")
+        print(f"Loading MobileNet structure from code...")
 
-        # MobileNet is a standard Keras model, so we don't need custom objects!
-        # compile=False prevents errors if the optimizer state is weird
-        self.model = load_model(self.model_path, compile=False)
-        print("✅ Model loaded successfully.")
+        # 1. Build the clean, compatible model architecture
+        self.model = create_mobilenet_classifier()
+
+        # 2. Load ONLY the weights (Bypasses the batch_shape and version conflicts)
+        self.model.load_weights(self.model_path)
+
+        print(f"✅ Model loaded successfully from weights ({self.model_path}).")
 
     def predict(self, image_file, threshold=0.5):
         try:
             # 1. Preprocess
-            # Handle both file path (string) and file object (Streamlit)
             if isinstance(image_file, str):
                 img = load_img(image_file, target_size=(IMG_SIZE, IMG_SIZE))
             else:
                 img = load_img(image_file, target_size=(IMG_SIZE, IMG_SIZE))
 
             img_array = img_to_array(img)
-            img_array = img_array / 255.0  # MobileNet expects 0-1 range
+            img_array = img_array / 255.0
             img_array = np.expand_dims(img_array, axis=0)
 
             # 2. Inference

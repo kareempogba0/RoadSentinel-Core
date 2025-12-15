@@ -1,8 +1,8 @@
-import os
 import streamlit as st
 import time
 from PIL import Image
 from src.predictor import RoadSentinelPredictor
+import os
 
 # ---------------------------------------------------------
 # 1. PAGE CONFIGURATION
@@ -37,6 +37,7 @@ def get_ai_engine():
 try:
     predictor = get_ai_engine()
 except Exception as e:
+    # Diagnostic output kept for debugging server issues
     st.error(f"⚠️ Model loading failed. Error details: {e}")
     st.write("Current working directory:", os.getcwd())
     st.write("Files in 'models' folder:", os.listdir('models') if os.path.exists('models') else "Folder not found")
@@ -46,7 +47,7 @@ except Exception as e:
 # 3. SIDEBAR
 # ---------------------------------------------------------
 with st.sidebar:
-    # FIXED: Removed Markdown syntax []() from the string
+    # Clean URL string used
     st.image("https://cdn-icons-png.flaticon.com/512/1167/1167993.png", width=80)
     st.title("RoadSentinel")
     st.markdown("**Intelligent Traffic Safety System**")
@@ -55,9 +56,8 @@ with st.sidebar:
     app_mode = st.selectbox("Choose Mode", ["📸 Image Analysis", "🎥 Live Stream Simulation"])
 
     st.markdown("### ⚙️ Calibration")
-    # UPDATED: Slider focused on the high range (0.90 - 1.00)
+    # Threshold set to standard 0.5 default
     threshold = st.slider("Sensitivity Threshold", 0.0, 1.0, 0.5, 0.01)
-    # st.caption("Adjust to filter out safe roads appearing as accidents.")
     st.caption(f"Model: MobileNetV2 (Transfer Learning)")
 
     st.markdown("---")
@@ -75,8 +75,8 @@ if app_mode == "📸 Image Analysis":
         uploaded_file = st.file_uploader("Upload Image", type=['jpg', 'jpeg', 'png'])
         if uploaded_file:
             image = Image.open(uploaded_file)
-            # FIXED: Updated parameter based on warning (use_container_width -> width='stretch')
-            st.image(image, caption="Input Feed", width="stretch")
+            # FIX APPLIED: Updated to use_container_width to resolve deprecation warning
+            st.image(image, caption="Input Feed", use_container_width=True)
 
     with col2:
         if uploaded_file:
@@ -89,7 +89,6 @@ if app_mode == "📸 Image Analysis":
             if "error" in result:
                 st.error(f"Analysis Failed: {result['error']}")
             else:
-                # DEBUG INFO: Show the raw score
                 raw_score = result['raw_score']
                 st.info(f"🧠 Raw Score: **{raw_score:.4f}** | Threshold: **{threshold:.3f}**")
 
@@ -114,7 +113,6 @@ elif app_mode == "🎥 Live Stream Simulation":
     c2.metric("Incidents Today", "4", "High")
     c3.metric("Avg Response Time", "3 min", "-30s")
 
-    # FIXED: Removed Markdown syntax []() and updated width parameter
     st.image(
         "https://media.istockphoto.com/id/483647334/photo/traffic-jam-on-highway.jpg?s=612x612&w=0&k=20&c=L0kQouK44i-Z6QjC2VwYQJ0w_T0w_T0w.jpg",
-        caption="Camera Feed 04 [LIVE]", width="stretch")
+        caption="Camera Feed 04 [LIVE]", use_container_width=True)

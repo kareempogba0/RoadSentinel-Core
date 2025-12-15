@@ -1,4 +1,4 @@
-# AI & Computer Vision
+#AI & Computer Vision
 ultralytics
 opencv-python-headless==4.8.1.78
 torch
@@ -6,16 +6,16 @@ torchvision
 tensorflow
 scikit-learn
 
-# Data Handling & Math
+#Data Handling & Math
 pandas
 numpy
 matplotlib
 seaborn
 
-# Dataset Management
+#Dataset Management
 roboflow
 
-# Backend & Dashboard
+#Backend & Dashboard
 fastapi
 uvicorn
 streamlit
